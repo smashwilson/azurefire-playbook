@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# {{ ansible_managed }}
+#
+# Bash script to set environment variables for PushBot.
+
+export HUBOT_IRC_SERVER={{ pushbot_irc_server }}
+export HUBOT_IRC_ROOMS="{{ pushbot_irc_rooms }}"
+export HUBOT_IRC_NICK="{{ pushbot_irc_nick }}"
+export HUBOT_IRC_UNFLOOD="{{ pushbot_irc_unflood }}"
+
+# hubot-markov
+
+export HUBOT_MARKOV_LEARN_MIN=2
+export HUBOT_MARKOV_GENERATE_MAX=100
+
+# hubot-greerings
+
+export HUBOT_GREETINGS_FFA=1

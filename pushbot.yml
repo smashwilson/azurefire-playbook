@@ -1,0 +1,61 @@
+---
+- name: pushbot setup
+  hosts: all
+  vars_files:
+  - vars.yml
+  remote_user: root
+  tasks:
+
+  - name: create the user
+    user: name={{ pushbot_username }} state=present
+          home={{ pushbot_home }} comment="Here to protect you"
+
+  - name: install a public key
+    authorized_key: user={{ pushbot_username }} state=present
+                    key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: create the destination directory
+    file: path={{ item }} state=directory mode=0755
+          owner={{ pushbot_username }} group={{ pushbot_username }}
+    with_items:
+    - "{{ pushbot_root }}"
+    - "{{ pushbot_log }}"
+
+  - name: install global npm dependencies
+    npm: name={{ item }} state=latest global=yes
+    with_items:
+    - coffee-script
+
+  - name: install redis for the brain
+    apt: pkg=redis-server state=present
+
+  - name: write the init script
+    template: dest=/etc/init/pushbot.conf src=templates/pushbot.conf.j2
+
+- name: pushbot install
+  hosts: all
+  vars_files:
+  - vars.yml
+  remote_user: "{{ pushbot_username }}"
+  tasks:
+
+  - name: clone the repository
+    git: dest={{ pushbot_root }} accept_hostkey=yes update=yes
+         repo=https://github.com/smashwilson/pushbot.git
+
+  - name: write the configuration file
+    template: dest={{ pushbot_root }}/.botrc src=templates/botrc.j2
+
+- name: pushbot cleanup
+  hosts: all
+  vars_files:
+  - vars.yml
+  remote_user: root
+  tasks:
+
+  - name: revoke my key from the pushbot user.
+    authorized_key: user={{ pushbot_username }} state=absent
+                    key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: start pushbot
+    service: name=pushbot state=started
