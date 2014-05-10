@@ -29,8 +29,11 @@
   - name: install redis for the brain
     apt: pkg=redis-server state=present
 
-  - name: write the init script
-    template: dest=/etc/init/pushbot.conf src=templates/pushbot.conf.j2
+  - name: write the init scripts
+    template: dest=/etc/init/{{ item }}.conf src=templates/{{ item }}.conf.j2
+    with_items:
+    - pushbot-irc
+    - pushbot-gtalk
 
 - name: pushbot install
   hosts: all
@@ -59,4 +62,7 @@
                     key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
   - name: start pushbot
-    service: name=pushbot state=started
+    service: name={{ item }} state=started
+    with_items:
+    - pushbot-irc
+    - pushbot-gtalk
