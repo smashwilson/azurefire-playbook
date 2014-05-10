@@ -15,5 +15,8 @@ I don't really expect this to be particularly useful to anyone else, but just
 in case, here's how you run it:
 
 ```bash
+cp credentials.yml.example credentials.yml
+${EDITOR} credentials.yml
+
 ansible-playbook -i "${SERVER_HOSTNAME}," site.yml
 ```
