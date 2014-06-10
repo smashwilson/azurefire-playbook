@@ -27,6 +27,20 @@
     notify:
     - restart nginx
 
+  - name: install the SSL certificate
+    copy: src=files/certificates/azurefire.net.crt
+          dest={{ ssl_cert_path }}
+          mode=0644
+    notify:
+    - restart nginx
+
+  - name: install the private key
+    copy: src=files/certificates/azurefire.net.key
+          dest={{ ssl_key_path }}
+          mode=0600
+    notify:
+    - restart nginx
+
   - name: ensure the service is up
     service: name=nginx state=started
 

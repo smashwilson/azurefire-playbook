@@ -11,6 +11,8 @@ azure_rbenv:
 
 web_domain: azurefire.net
 web_root: /var/www/
+ssl_cert_path: /etc/ssl/certs/azurefire.net.crt
+ssl_key_path: /etc/ssl/private/azurefire.net.key
 
 pushbot_username: pushbot
 pushbot_home: /var/pushbot
