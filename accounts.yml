@@ -1,0 +1,35 @@
+---
+- name: create system accounts and common prerequisities.
+  hosts: all
+  vars_files:
+  - vars.yml
+  remote_user: root
+  tasks:
+
+  - name: create each user
+    user: name={{ item.username }} state=present
+          home={{ item.home }} group={{ item.group }}
+          shell=/bin/bash
+    with_items:
+    - username: "{{ pushbot_username }}"
+      home: "{{ pushbot_home }}"
+      group: "{{ pushbot_username }}"
+    - username: "{{ azure_username }}"
+      home: "{{ azure_home }}"
+      group: www-data
+
+  - name: install a public key
+    authorized_key: user={{ item }} state=present
+                    key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    with_items:
+    - "{{ pushbot_username }}"
+    - "{{ azure_username }}"
+
+  - name: install python-software-properties for apt_repository
+    apt: package=python-software-properties state=present
+
+  - name: add the nginx ppa
+    apt_repository: repo='ppa:nginx/stable' state=present
+
+  - name: update the apt cache and any installed packages
+    apt: update_cache=yes upgrade=dist

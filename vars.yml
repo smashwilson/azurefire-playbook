@@ -1,4 +1,17 @@
 ---
+ruby_version: 2.1.2
+
+azure_username: azure
+azure_home: /home/azure
+azure_root: /home/azure/src/azurefire
+azure_rbenv_root: "{{ azure_home }}/.rbenv"
+azure_rbenv:
+  RBENV_ROOT: "{{ azure_rbenv_root }}"
+  PATH: "{{ azure_rbenv_root }}/shims:{{ azure_rbenv_root }}/bin:{{ ansible_env.PATH }}"
+
+web_domain: azurefire.net
+web_root: /var/www/
+
 pushbot_username: pushbot
 pushbot_home: /var/pushbot
 pushbot_root: "{{ pushbot_home }}/src/pushbot"

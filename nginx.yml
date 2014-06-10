@@ -1,0 +1,40 @@
+---
+- name: install and configure nginx
+  hosts: all
+  vars_files:
+  - vars.yml
+  remote_user: root
+  tasks:
+
+  - name: grab nginx from apt
+    apt: package=nginx state=latest
+
+  - name: disable the default site
+    file: path=/etc/nginx/sites-enabled/default state=absent
+    notify:
+    - restart nginx
+
+  - name: create the new site
+    template: src=templates/azurefire-site.j2 dest=/etc/nginx/sites-available/azurefire
+              mode=0644
+    notify:
+    - restart nginx
+
+  - name: enable the new site
+    file: dest=/etc/nginx/sites-enabled/azurefire
+          src=/etc/nginx/sites-available/azurefire
+          state=link
+    notify:
+    - restart nginx
+
+  - name: ensure the service is up
+    service: name=nginx state=started
+
+  - name: create the web root
+    file: path={{ web_root }} state=directory
+          group=www-data mode=0775
+
+  handlers:
+
+  - name: restart nginx
+    service: name=nginx state=restarted
