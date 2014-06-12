@@ -76,6 +76,9 @@
     command: rbenv rehash
     environment: azure_rbenv
 
+  - name: configure the asset publishing plugin
+    template: src=templates/fog.yml.j2 dest={{ azure_root }}/fog.yml
+
   - name: generate the site
     command: jekyll build
              --source {{ azure_root }}
