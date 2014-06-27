@@ -67,14 +67,17 @@
   - name: get the latest source
     git: repo=https://github.com/smashwilson/azurefire.git
          dest={{ azure_root }}
+    tags: ["publish"]
 
   - name: bundler-managed dependencies
     command: chdir={{ azure_root }} bundle install
     environment: azure_rbenv
+    tags: ["publish"]
 
   - name: rehash to pick up changes
     command: rbenv rehash
     environment: azure_rbenv
+    tags: ["publish"]
 
   - name: configure the asset publishing plugin
     template: src=templates/fog.yml.j2 dest={{ azure_root }}/fog.yml
@@ -84,3 +87,4 @@
              --source {{ azure_root }}
              --destination {{ web_root }}
     environment: azure_rbenv
+    tags: ["publish"]
