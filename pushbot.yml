@@ -1,6 +1,6 @@
 ---
 - name: pushbot setup
-  hosts: all
+  hosts: azurefire
   vars_files:
   - vars.yml
   remote_user: root

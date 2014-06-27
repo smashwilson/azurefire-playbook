@@ -1,6 +1,6 @@
 ---
 - name: create system accounts and common prerequisities.
-  hosts: all
+  hosts: azurefire
   vars_files:
   - vars.yml
   remote_user: root
