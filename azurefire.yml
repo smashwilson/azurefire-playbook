@@ -80,7 +80,7 @@
     tags: ["publish"]
 
   - name: configure the asset publishing plugin
-    template: src=templates/fog.yml.j2 dest={{ azure_root }}/fog.yml
+    template: src=templates/_fog.yml.j2 dest={{ azure_root }}/_fog.yml
 
   - name: generate the site
     command: jekyll build
