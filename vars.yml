@@ -25,3 +25,7 @@ pushbot_irc_nick: PushBot
 pushbot_irc_unflood: true
 
 pushbot_gtalk_username: heretoprotectus@gmail.com
+
+pushbot_slack_team: tilde-s
+pushbot_slack_botname: PushBot
+pushbot_slack_linknames: 1
