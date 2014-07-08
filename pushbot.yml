@@ -33,7 +33,7 @@
     template: dest=/etc/init/{{ item }}.conf src=templates/{{ item }}.conf.j2
     with_items:
     - pushbot-irc
-    - pushbot-gtalk
+    - pushbot-slack
 
 - name: pushbot install
   hosts: all
@@ -65,4 +65,4 @@
     service: name={{ item }} state=started
     with_items:
     - pushbot-irc
-    - pushbot-gtalk
+    - pushbot-slack
