@@ -50,6 +50,9 @@
   - name: write the configuration file
     template: dest={{ pushbot_root }}/.botrc src=templates/botrc.j2
 
+  - name: install dependencies
+    npm: path={{ pushbot_root }}
+
 - name: pushbot cleanup
   hosts: all
   vars_files:
