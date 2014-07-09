@@ -1,6 +1,6 @@
 respawn
 
-exec su - {{ pushbot_username }} -c 'cd {{ pushbot_root }} ; bin/pushbot-irc >> {{ pushbot_log }}/pushbot.irc.log 2>&1'
+exec su - {{ pushbot_username }} -c 'cd {{ pushbot_root }} ; PORT=8081 bin/pushbot-irc >> {{ pushbot_log }}/pushbot.irc.log 2>&1'
 
 start on runlevel [2345]
 
