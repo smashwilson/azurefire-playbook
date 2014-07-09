@@ -20,6 +20,7 @@
     with_items:
     - "{{ pushbot_root }}"
     - "{{ pushbot_log }}"
+    - "{{ pushbot_root }}/botdata"
 
   - name: install global npm dependencies
     npm: name={{ item }} state=latest global=yes
