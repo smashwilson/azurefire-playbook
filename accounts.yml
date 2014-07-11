@@ -33,3 +33,6 @@
 
   - name: update the apt cache and any installed packages
     apt: update_cache=yes upgrade=dist
+
+  - name: set the timezone
+    command: /bin/cp /usr/share/zoneinfo/America/New_York /etc/localtime
