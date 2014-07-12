@@ -91,6 +91,6 @@
     tags: ["publish"]
 
   - name: publish CDN assets
-    command: "{{ azure_root }}/script/cdn {{ web_root }}/assets"
+    command: "{{ azure_root }}/script/cdn {{ web_root }}assets"
     environment: azure_rbenv
     tags: ["publish"]
