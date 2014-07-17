@@ -33,7 +33,6 @@
   - name: write the init scripts
     template: dest=/etc/init/{{ item }}.conf src=templates/{{ item }}.conf.j2
     with_items:
-    - pushbot-irc
     - pushbot-slack
 
 - name: pushbot install
