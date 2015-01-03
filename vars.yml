@@ -18,14 +18,3 @@ pushbot_username: pushbot
 pushbot_home: /var/pushbot
 pushbot_root: "{{ pushbot_home }}/src/pushbot"
 pushbot_log: /var/log/pushbot
-
-pushbot_irc_server: irc.dalnet.com
-pushbot_irc_rooms: "#~s"
-pushbot_irc_nick: PushBot
-pushbot_irc_unflood: true
-
-pushbot_gtalk_username: heretoprotectus@gmail.com
-
-pushbot_slack_team: tilde-s
-pushbot_slack_botname: PushBot
-pushbot_slack_linknames: 1

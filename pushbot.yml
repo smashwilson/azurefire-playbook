@@ -31,9 +31,7 @@
     apt: pkg=redis-server state=present
 
   - name: write the init scripts
-    template: dest=/etc/init/{{ item }}.conf src=templates/{{ item }}.conf.j2
-    with_items:
-    - pushbot-slack
+    template: dest=/etc/init/pushbot-slack.conf src=templates/pushbot-slack.conf.j2
 
 - name: pushbot install
   hosts: all
@@ -65,7 +63,4 @@
                     key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
   - name: start pushbot
-    service: name={{ item }} state=started
-    with_items:
-    - pushbot-irc
-    - pushbot-slack
+    service: name=pushbot-slack state=started
