@@ -37,7 +37,7 @@
   hosts: all
   vars_files:
   - vars.yml
-  - credentials.yml
+  - ["credentials.yml", "credentials.vault.yml"]
   remote_user: "{{ pushbot_username }}"
   tasks:
 

@@ -61,7 +61,7 @@
   hosts: azurefire
   vars_files:
   - vars.yml
-  - credentials.yml
+  - ["credentials.yml", "credentials.vault.yml"]
   remote_user: "{{ azure_username }}"
   tasks:
 
