@@ -3,6 +3,7 @@
   hosts: azurefire
   vars_files:
   - vars.yml
+  - ["credentials.yml", "credentials.vault.yml"]
   remote_user: root
   tasks:
 
@@ -35,9 +36,9 @@
     - restart nginx
 
   - name: install the private key
-    copy: src=files/certificates/azurefire.net.key
-          dest={{ ssl_key_path }}
-          mode=0600
+    template: src=templates/azurefire.net.key.j2
+              dest={{ ssl_key_path }}
+              mode=0600
     notify:
     - restart nginx
 

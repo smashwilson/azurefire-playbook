@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ROOT=$(cd $(dirname $0)/..; pwd)
+
+ansible-vault view ${ROOT}/credentials.vault.yml > ${ROOT}/credentials.yml
