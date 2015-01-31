@@ -1,0 +1,11 @@
+#!/bin/bash
+
+ROOT=$(cd $(dirname $0)/..; pwd)
+
+if [ ! -e ${ROOT}/credentials.yml ]; then
+  echo "[lock] credentials.yml does not exist!"
+  exit 1
+fi
+
+cp ${ROOT}/credentials.yml ${ROOT}/credentials.vault.yml
+ansible-vault encrypt ${ROOT}/credentials.vault.yml
