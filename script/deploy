@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ROOT=$(cd $(dirname $0)/..; pwd)
+
+VAULT_ARG=
+[ -e ${ROOT}/credentials.yml ] || VAULT_ARG=--ask-vault-pass
+
+exec ansible-playbook -i ${ROOT}/hosts ${ROOT}/site.yml $@
