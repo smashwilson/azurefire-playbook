@@ -7,12 +7,13 @@
   tasks:
 
   - name: pushbot data directory
-    file: path=/var/pushbot/botdata state=directory
+    file: path=/var/pushbot/botdata/mappings state=directory
 
   - name: redis data container
     docker:
       name: redis-data
       image: alpine
+      command: echo
       state: present
       volumes:
       - /data
@@ -23,7 +24,8 @@
       image: redis
       command: redis-server --appendonly yes
       state: reloaded
-      volumes_from: redis-data
+      volumes_from:
+      - redis-data
       restart_policy: always
 
   - name: redis-cli
@@ -48,4 +50,5 @@
         HUBOT_AUTH_ADMIN: "U02D23B7J,U02D23G6N"
         HUBOT_BETRAY_IMMUNE: "U02D23B7J,U02D23G6N,U02D25HJG,U02D1CX67"
         HUBOT_WEATHER_APIKEY: "{{ pushbot_weather_apikey }}"
+        REDISTOGO_URL: redis://redis/
       restart_policy: always
