@@ -13,3 +13,9 @@
 
   - name: set the timezone
     command: /bin/cp /usr/share/zoneinfo/America/New_York /etc/localtime
+
+  - name: install utilities
+    apt: name={{ item }} state=latest
+    with_items:
+    - git
+    - vim
