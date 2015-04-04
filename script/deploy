@@ -20,6 +20,9 @@ ROOT=$(cd $(dirname $0)/..; pwd)
 EOM
     exit 1
   }
+
+  ansible-galaxy install --force --role-file ${ROOT}/requirements.txt
+  cp ${ROOT}/requirements.txt ${ROOT}/.galaxy
 }
 
 VAULT_ARG=
