@@ -1,96 +1,15 @@
 ---
-- name: grab some things from apt first
+- name: build azurefire
   hosts: azurefire
-  remote_user: root
   tasks:
 
-  - name: install apt prerequisites
-    apt: pkg={{ item }} state=latest
-    with_items:
-    - build-essential
-    - libssl-dev
-    - libreadline-dev
-    - libyaml-dev
-    - libsqlite3-dev
-    - sqlite3
-    - libxml2-dev
-    - libxslt1-dev
-    - zlib1g-dev
-    - git
-
-- name: install ruby by way of rbenv
-  hosts: azurefire
-  vars_files:
-  - vars.yml
-  remote_user: "{{ azure_username }}"
-  tasks:
-
-  - name: install rbenv
-    git: repo=https://github.com/sstephenson/rbenv.git
-         dest={{ azure_rbenv_root }}
-
-  - name: install ruby-build
-    git: repo=https://github.com/sstephenson/ruby-build.git
-         dest={{ azure_rbenv_root }}/plugins/ruby-build
-
-  - name: install a reasonable gemrc
-    copy: src=files/gemrc dest={{ azure_home }}/.gemrc mode=0644
-
-  - name: build ruby {{ ruby_version }}
-    shell: chdir={{ azure_home }} rbenv install {{ ruby_version }}
-           creates={{ azure_rbenv_root }}/versions/{{ ruby_version }}/bin/ruby
-    environment: azure_rbenv
-
-  - name: set the global ruby version to {{ ruby_version }}
-    command: chdir={{ azure_home }} rbenv global {{ ruby_version }}
-    environment: azure_rbenv
-
-  - name: rehash to pick up changes
-    command: rbenv rehash
-    environment: azure_rbenv
-
-  - name: install bundler
-    gem: name=bundler state=present executable={{ azure_rbenv_root }}/shims/gem
-    environment: azure_rbenv
-
-  - name: rehash to pick up changes
-    command: rbenv rehash
-    environment: azure_rbenv
-
-- name: build the site
-  hosts: azurefire
-  vars_files:
-  - vars.yml
-  - ["credentials.yml", "credentials.vault.yml"]
-  remote_user: "{{ azure_username }}"
-  tasks:
-
-  - name: get the latest source
-    git: repo=https://github.com/smashwilson/azurefire.git
-         dest={{ azure_root }}
-    tags: ["publish"]
-
-  - name: bundler-managed dependencies
-    command: chdir={{ azure_root }} bundle install
-    environment: azure_rbenv
-    tags: ["publish"]
-
-  - name: rehash to pick up changes
-    command: rbenv rehash
-    environment: azure_rbenv
-    tags: ["publish"]
-
-  - name: configure the asset publishing plugin
-    template: src=templates/_fog.yml.j2 dest={{ azure_root }}/_fog.yml
-
-  - name: generate the site
-    command: jekyll build
-             --source {{ azure_root }}
-             --destination {{ web_root }}
-    environment: azure_rbenv
-    tags: ["publish"]
-
-  - name: publish CDN assets
-    command: "{{ azure_root }}/_script/cdn {{ web_root }}assets"
-    environment: azure_rbenv
-    tags: ["publish"]
+  - name: site build
+    docker:
+      name: azurefire
+      image: quay.io/smashwilson/azurefire
+      state: started
+      env:
+        RACKSPACE_USERNAME: "{{ rackspace_username }}"
+        RACKSPACE_APIKEY: "{{ rackspace_apikey }}"
+        RACKSPACE_REGION: "{{ rackspace_region }}"
+        RACKSPACE_CONTAINER: "{{ asset_container }}"
