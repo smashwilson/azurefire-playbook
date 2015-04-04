@@ -2,6 +2,8 @@
 
 - include: accounts.yml
 
+- include: docker.yml
+
 - include: nginx.yml
 
 - include: pushbot.yml

@@ -34,5 +34,21 @@
   - name: update the apt cache and any installed packages
     apt: update_cache=yes upgrade=dist
 
+  - name: useful apt packages
+    apt: name={{ item }} state=latest
+    with_items:
+    - git
+    - vim
+    - curl
+    - wget
+    - python-dev
+    - python-requests
+    - python-pip
+
+  - name: useful python packages
+    pip: name={{ item }} state=latest
+    with_items:
+    - docker-py
+
   - name: set the timezone
     command: /bin/cp /usr/share/zoneinfo/America/New_York /etc/localtime
