@@ -4,8 +4,6 @@
 
 - include: docker.yml
 
-- include: nginx.yml
-
 - include: pushbot.yml
 
 - include: azurefire.yml

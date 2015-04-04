@@ -1,66 +1,51 @@
 ---
-- name: pushbot setup
+- name: pushbot
   hosts: azurefire
   vars_files:
   - vars.yml
-  remote_user: root
-  tasks:
-
-  - name: create the user
-    user: name={{ pushbot_username }} state=present
-          home={{ pushbot_home }} comment="Here to protect you"
-
-  - name: install a public key
-    authorized_key: user={{ pushbot_username }} state=present
-                    key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
-  - name: create the destination directory
-    file: path={{ item }} state=directory mode=0755
-          owner={{ pushbot_username }} group={{ pushbot_username }}
-    with_items:
-    - "{{ pushbot_root }}"
-    - "{{ pushbot_log }}"
-    - "{{ pushbot_root }}/botdata"
-
-  - name: install global npm dependencies
-    npm: name={{ item }} state=latest global=yes
-    with_items:
-    - coffee-script
-
-  - name: install redis for the brain
-    apt: pkg=redis-server state=present
-
-  - name: write the init scripts
-    template: dest=/etc/init/pushbot-slack.conf src=templates/pushbot-slack.conf.j2
-
-- name: pushbot install
-  hosts: all
-  vars_files:
-  - vars.yml
   - ["credentials.yml", "credentials.vault.yml"]
-  remote_user: "{{ pushbot_username }}"
   tasks:
 
-  - name: clone the repository
-    git: dest={{ pushbot_root }} accept_hostkey=yes update=yes
-         repo=https://github.com/smashwilson/pushbot.git
+  - name: pushbot data directory
+    file: path=/var/pushbot/botdata state=directory
 
-  - name: write the configuration file
-    template: dest={{ pushbot_root }}/.botrc src=templates/botrc.j2
+  - name: redis data container
+    docker:
+      name: redis-data
+      image: alpine
+      state: present
+      volumes:
+      - /data
 
-  - name: install dependencies
-    npm: path={{ pushbot_root }}
+  - name: redis:2.8
+    docker:
+      name: redis
+      image: redis
+      command: redis-server --appendonly yes
+      state: reloaded
+      volumes_from: redis-data
+      restart_policy: always
 
-- name: pushbot cleanup
-  hosts: all
-  vars_files:
-  - vars.yml
-  remote_user: root
-  tasks:
+  - name: redis-cli
+    copy: src=files/redis-cli dest=/usr/local/bin/redis-cli mode=0755
 
-  - name: revoke my key from the pushbot user.
-    authorized_key: user={{ pushbot_username }} state=absent
-                    key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
-  - name: start pushbot
-    service: name=pushbot-slack state=started
+  - name: pushbot
+    docker:
+      name: pushbot
+      image: quay.io/smashwilson/pushbot
+      state: reloaded
+      pull: always
+      links:
+      - "redis:redis"
+      volumes:
+      - "/usr/src/app/botdata:/var/pushbot/botdata"
+      env:
+        HUBOT_SLACK_TOKEN: "{{ pushbot_slack_token }}"
+        HUBOT_MARKOV_LEARN_MIN: "2"
+        HUBOT_MARKOV_GENERATE_MAX: "100"
+        HUBOT_GREETINGS_FFA: "1"
+        HUBOT_QUOTEFILE_PATH: /usr/src/app/botdata
+        HUBOT_AUTH_ADMIN: "U02D23B7J,U02D23G6N"
+        HUBOT_BETRAY_IMMUNE: "U02D23B7J,U02D23G6N,U02D25HJG,U02D1CX67"
+        HUBOT_WEATHER_APIKEY: "{{ pushbot_weather_apikey }}"
+      restart_policy: always

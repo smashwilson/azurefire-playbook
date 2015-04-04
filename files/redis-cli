@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Easily launch redis-cli that's connected to the Docker container.
+
+sudo docker run \
+  --interactive=true \
+  --tty=true \
+  --link redis:redis \
+  --rm=true \
+  redis:2.8 \
+  sh -c 'exec redis-cli -h "${REDIS_PORT_6379_TCP_ADDR}" -p "${REDIS_PORT_6379_TCP_PORT}"'
