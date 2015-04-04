@@ -7,3 +7,5 @@
 - include: pushbot.yml
 
 - include: azurefire.yml
+
+- include: nginx.yml

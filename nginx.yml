@@ -1,55 +1,51 @@
 ---
-- name: install and configure nginx
+- name: nginx
   hosts: azurefire
   vars_files:
   - vars.yml
   - ["credentials.yml", "credentials.vault.yml"]
-  remote_user: root
   tasks:
 
-  - name: grab nginx from apt
-    apt: package=nginx state=latest
-
-  - name: disable the default site
-    file: path=/etc/nginx/sites-enabled/default state=absent
-    notify:
-    - restart nginx
-
-  - name: create the new site
-    template: src=templates/azurefire-site.j2 dest=/etc/nginx/sites-available/azurefire
-              mode=0644
-    notify:
-    - restart nginx
-
-  - name: enable the new site
-    file: dest=/etc/nginx/sites-enabled/azurefire
-          src=/etc/nginx/sites-available/azurefire
-          state=link
-    notify:
-    - restart nginx
-
   - name: install the SSL certificate
-    copy: src=files/certificates/azurefire.net.crt
-          dest={{ ssl_cert_path }}
-          mode=0644
+    copy:
+      src: files/certificates/azurefire.net.crt
+      dest: /var/nginx/ssl/azurefire.net.crt
+      mode: "0644"
     notify:
     - restart nginx
 
   - name: install the private key
-    template: src=templates/azurefire.net.key.j2
-              dest={{ ssl_key_path }}
-              mode=0600
+    template:
+      src: templates/azurefire.net.key.j2
+      dest: /var/nginx/ssl/azurefire.net.key
+      mode: "0600"
     notify:
     - restart nginx
 
-  - name: ensure the service is up
-    service: name=nginx state=started
+  - name: install the nginx configuration
+    template:
+      src: templates/nginx.conf.j2
+      dest: /var/nginx/nginx.conf
+      mode: "0600"
+    notify:
+    - restart nginx
 
-  - name: create the web root
-    file: path={{ web_root }} state=directory
-          group=www-data mode=0775
+  - name: nginx:1.7
+    docker:
+      name: nginx
+      image: nginx
+      state: reloaded
+      ports:
+      - "80:80"
+      - "443:443"
+      volumes:
+      - "/var/nginx/ssl:/var/ssl:ro"
+      - "/var/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      volumes_from:
+      - azurefire
+      restart_policy: always
 
   handlers:
 
   - name: restart nginx
-    service: name=nginx state=restarted
+    docker: name=nginx image=nginx state=restarted
