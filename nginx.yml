@@ -6,6 +6,9 @@
   - ["credentials.yml", "credentials.vault.yml"]
   tasks:
 
+  - name: host directories
+    file: dest=/var/nginx/ssl state=directory
+
   - name: install the SSL certificate
     copy:
       src: files/certificates/azurefire.net.crt
