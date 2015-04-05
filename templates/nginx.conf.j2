@@ -1,0 +1,66 @@
+# nginx configuration for azurefire
+#
+# {{ ansible_managed }}
+
+user nginx;
+worker_processes 1;
+
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 4096;
+}
+
+http {
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                  '$status $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+  access_log /var/log/nginx/access.log main;
+
+  sendfile on;
+  tcp_nodelay on;
+  tcp_nopush on;
+
+  keepalive_timeout 65;
+  gzip on;
+
+  server {
+    listen 443 default_server;
+    listen [::]:443 default_server;
+
+    root /var/www;
+    server_name azurefire.net;
+
+    ssl on;
+    ssl_certificate /var/ssl/azurefire.net.crt;
+    ssl_certificate_key /var/ssl/azurefire.net.key;
+
+    ssl_ciphers "AES128+EECDH:AES128+EDH";
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    ssl_session_tickets off;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
+    location / {
+      try_files $uri $uri/ =404;
+    }
+  }
+
+  server {
+    listen 80;
+    listen [::]:80;
+    server_name azurefire.net;
+
+    return 301 https://$host$request_uri;
+  }
+}

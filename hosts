@@ -1,2 +1,2 @@
 [azurefire]
-azurefire.net
+azurefire.net ansible_ssh_user=root
