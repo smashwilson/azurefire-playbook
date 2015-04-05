@@ -11,6 +11,7 @@
       name: azurefire
       image: quay.io/smashwilson/azurefire
       state: started
+      detach: no
       env:
         RACKSPACE_USERNAME: "{{ rackspace_username }}"
         RACKSPACE_APIKEY: "{{ rackspace_api_key }}"
