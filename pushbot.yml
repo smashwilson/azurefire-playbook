@@ -38,6 +38,8 @@
       state: reloaded
       links:
       - "redis:redis"
+      volumes:
+      - "/usr/src/app/botdata:/var/pushbot/botdata"
       env:
         REDISTOGO_URL: redis://redis/
         HUBOT_SLACK_TOKEN: "{{ pushbot_slack_token }}"
